@@ -1,0 +1,61 @@
+version: "3"
+
+# Starts up all necessary containers to test the backend
+
+services:
+    db:
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        ports: 
+        - '5432:5432'
+        networks:
+        - default
+    back:
+        image: nikl/hls
+        ports:
+            - "4000:4000"
+        networks:
+            - default
+            - elastic
+        depends_on:
+            - db
+            - elasticsearch
+        entrypoint: ["/bin/sh", "/usr/src/app/docker-entrypoint.sh"]
+        command: ["npm", "run", "test"]
+        environment:
+            DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+            PG_DB: postgres
+            PG_USER: postgres
+            PG_PASSWORD: postgres
+            PG_HOST: db
+            WEBPORT: 3000
+            PORT: 4000
+            HOST: localhost
+            ELASTIC_HOST: elasticsearch
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+        container_name: elasticsearch
+        environment:
+            - xpack.security.enabled=false
+            - discovery.type=single-node
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        cap_add:
+            - IPC_LOCK
+        networks:
+            - elastic
+        ports:
+            - 9200:9200
+            - 9300:9300
+
+networks:
+    default:
+    elastic:
+        driver: bridge
