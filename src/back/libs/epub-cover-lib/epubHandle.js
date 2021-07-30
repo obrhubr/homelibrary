@@ -28,7 +28,7 @@ async function epubHandle(filename) {
         });
 
         // Remove the folder with the extracted .epub
-        await fs.rmdir('./public/images/' + filename, { recursive: true }, (err) => { if(err) { console.log(err); } });
+        await fs.rm('./public/images/' + filename, { recursive: true }, (err) => { if(err) { console.log(err); } });
     } catch (err) {
         logger.log("error", 'ROUTE: /epubHandle/ - Error while extracting epub: ' + err);
         return imageFilename;
