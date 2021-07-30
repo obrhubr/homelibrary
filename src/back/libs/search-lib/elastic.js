@@ -52,8 +52,7 @@ async function setBooksMapping () {
         };
   
         await elasticClient.indices.putMapping({ 
-            index, 
-            type,
+            index,
             'include_type_name': true,
             'body': { 
                 'properties': schema 
@@ -103,7 +102,6 @@ function checkConnection() {
 async function insertNew(list) {
     return elasticClient.index({
         index,
-        type,
         id: list[6].toString(),
         'body': {
             'book_id': list[6],
@@ -139,7 +137,6 @@ async function editRow(bookid, list) {
 async function deleteRow(bookid) {
     await elasticClient.delete({
         index,
-        type,
         id: bookid.toString()
     });
 }
