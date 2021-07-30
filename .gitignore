@@ -4,3 +4,4 @@ src/back/logs/*
 src/back/public/images/*
 src/back/public/books/*
 !src/back/public/images/nofile.png
+todo.txt

@@ -13,6 +13,8 @@ services:
             - 5432/tcp
         networks:
             - db
+        volumes: 
+            - pg:/var/lib/postgresql/data
 
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
@@ -44,6 +46,8 @@ services:
         expose:
             - 9200/tcp
             - 9300/tcp
+        volumes:
+            - elastic:/usr/share/elasticsearch/data
     
     # Frontend and backend
     back:
@@ -70,6 +74,8 @@ services:
             PORT: 4000
             HOST: localhost
             ELASTIC_HOST: elasticsearch
+        volumes: 
+            - backend_bookdata:/usr/src/app/public
 
     front:
         image: nikl/hlf
@@ -89,7 +95,8 @@ services:
         user: root
         image: prom/prometheus
         volumes:
-            - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+            - ./data/prometheus/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus:/prometheus
         ports:
             - 9090:9090
         networks: 
@@ -107,6 +114,9 @@ services:
         networks: 
             - monitoring
             - front
+        volumes:
+            - grafana_data:/var/lib/grafana
+            - grafana_prov:/etc/grafana/provisioning/
 
 networks:
     default:
@@ -116,3 +126,17 @@ networks:
         driver: bridge
     monitoring:
         driver: bridge
+
+volumes:
+    pg:
+        driver: local
+    elastic:
+        driver: local
+    prometheus:
+        driver: local
+    grafana_data:
+        driver: local
+    grafana_prov:
+        driver: local
+    backend_bookdata:
+        driver: local
