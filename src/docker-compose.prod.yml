@@ -48,10 +48,19 @@ services:
             - 9300/tcp
         volumes:
             - elastic:/usr/share/elasticsearch/data
+
+    fts:
+        image: fts
+        ports:
+            - 1984:1984
+        networks:
+            - default
+        volumes:
+            - fts:/usr/src/app/db
     
     # Frontend and backend
     back:
-        image: nikl/hls
+        image: hls
         ports:
             - "4000:4000"
         networks:
@@ -78,7 +87,7 @@ services:
             - backend_bookdata:/usr/src/app/public
 
     front:
-        image: nikl/hlf
+        image: hlf
         ports:
             - "3000:3000"
         command: ["npm", "run", "start"]
@@ -139,4 +148,6 @@ volumes:
     grafana_prov:
         driver: local
     backend_bookdata:
+        driver: local
+    fts:
         driver: local

@@ -43,6 +43,13 @@ services:
         ports:
             - 9200:9200
             - 9300:9300
+    
+    fts:
+        image: nikl/fts
+        ports:
+            - 1984:1984
+        networks:
+            - default
 
 networks:
   default:
