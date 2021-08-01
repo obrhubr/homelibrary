@@ -2,7 +2,7 @@
 
 ## Warning
 
-To use this project without my custom `fulltext-search` engine, which requires you to download another repo, switch to the other branch. 
+To use this project without my custom `fulltext-search` engine, switch to the `no-fts` branch. 
 
 ### Description
 
