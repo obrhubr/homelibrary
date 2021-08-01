@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const elastic = require('../libs/search-lib/elastic');
+const fetch = require('node-fetch');
 
 async function getResultsFromQuery(query) {
     const { hits } = await elastic.elasticClient.search({
@@ -106,6 +107,25 @@ router.get('/search-as-you-type/:text', async (req, res) => {
     
     let esres = await getResultsFromQuery(query);
     res.send(esres);
-}); 
+});
+
+// Routes to query fts service
+router.get('/books/one/:bookId/:text', async (req, res) => {
+    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false};
+    fetch('http://localhost:1984/search/one', { method: 'POST', body: JSON.stringify(data) })
+    .then(res => { return res.json() })
+    .then(json => {
+        res.json(json);
+    });
+});
+
+router.get('/books/all/:text', async (req, res) => {
+    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': true};
+    fetch('http://localhost:1984/search/all', { method: 'POST', body: JSON.stringify(data) })
+    .then(res => { return res.json() })
+    .then(json => {
+        res.json(json);
+    });
+});
 
 module.exports = router;

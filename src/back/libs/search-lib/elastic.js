@@ -53,6 +53,7 @@ async function setBooksMapping () {
   
         await elasticClient.indices.putMapping({ 
             index,
+            type,
             'include_type_name': true,
             'body': { 
                 'properties': schema 
