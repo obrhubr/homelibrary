@@ -25,10 +25,10 @@ services:
             resources:
                 limits:
                     cpus: '0.50'
-                    memory: 500M
+                    memory: 1000M
                 reservations:
                     cpus: '0.25'
-                    memory: 200M
+                    memory: 500M
         ulimits:
             memlock:
                 soft: -1
