@@ -45,7 +45,7 @@ services:
             - 9300:9300
     
     fts:
-        image: nikl/fts
+        image: fts
         ports:
             - 1984:1984
         networks:

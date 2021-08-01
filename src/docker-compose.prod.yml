@@ -51,10 +51,10 @@ services:
 
     fts:
         image: fts
-        ports:
-            - 1984:1984
+        expose:
+            - 1984/tcp
         networks:
-            - default
+            - db
         volumes:
             - fts:/usr/src/app/db
     
@@ -106,8 +106,8 @@ services:
         volumes:
             - ./data/prometheus/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
             - prometheus:/prometheus
-        ports:
-            - 9090:9090
+        expose:
+            - 9090/tcp
         networks: 
             - monitoring
         depends_on: 
