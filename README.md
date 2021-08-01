@@ -10,9 +10,13 @@ This project aims to simplify keeping a library of `.epub` files and searching t
 - [Built With](#built-with)
 
 ### Getting Started
+Always use the `--compatibility` flag to keep the elasticsearch memory usage in check.
 
-To get started, build both the `src/front` service and the `src/back` service and customize the image names in the docker-compose files. Then Run `docker-compose -f docker-compose.prod.yml up` to start all necessary services. Any migrations will be automatically run on each startup of the `src/back` service. To run only the databases run `docker-compose -f docker-compose.dev.yml up`.
-If you want to run the automated integration tests, run `docker-compose -f docker-compose.test.yml up`. I am using Jest and Supertest to check routes and cover extraction from the epubs.
+To get started, build both the `src/front` service and the `src/back` service and customize the image names in the docker-compose files. Then Run `docker-compose -f docker-compose.prod.yml --compatibility up` to start all necessary services. 
+
+Any migrations will be automatically run on each startup of the `src/back` service. To run only the databases run `docker-compose -f docker-compose.dev.yml --compatibility up`.
+
+If you want to run the automated integration tests, run `docker-compose -f docker-compose.test.yml --compatibility up`. I am using Jest and Supertest to check routes and cover extraction from the epubs.
 
 ### Usage
 
