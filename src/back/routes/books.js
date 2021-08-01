@@ -7,6 +7,7 @@ const router = express.Router();
 const fs = require('fs/promises');
 const { epubHandle } = require('../libs/epub-cover-lib/epubHandle');
 const elastic = require('../libs/search-lib/elastic');
+const ftsClient = require('../libs/fts-adapter');
 
 // require logger
 const { logger } = require('../libs/logger');
@@ -47,6 +48,7 @@ router.get('/all', async (req, res) => {
         );
     } catch (err) {
         logger.log('error', 'ROUTE: /books/all - Error while fetching from database.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while fetching from database.'});
     };
 });
@@ -70,12 +72,15 @@ router.get('/get/:bookid', async (req, res) => {
 
     } catch (err) {
         logger.log('error', 'ROUTE: /books/get/:bookid - Error while fetching from database.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while fetching from database.'});
     };
 });
 
 // Replace all values by those sent by the post request for the book with the selected id
 router.post('/edit/:bookid', upload.single('file'), async (req, res) => {
+    var changeFTStext = false;
+
     const textGet = 'SELECT * FROM "books" WHERE id = $1';
     const valuesGet = [req.params.bookid];
 
@@ -87,6 +92,7 @@ router.post('/edit/:bookid', upload.single('file'), async (req, res) => {
         var oldValues = dbresGet.rows[0];
     } catch (err) {
         logger.log('error', 'ROUTE: /books/edit/:bookid - Error while fetching from database to get old values.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while fetching from database.'});
     };
 
@@ -115,8 +121,12 @@ router.post('/edit/:bookid', upload.single('file'), async (req, res) => {
                 await fs.unlink('./public/' + oldValues.filepath);
                 await fs.unlink('./public/' + oldValues.image);
             };
+
+            // Send new text to FTS
+            changeFTStext = true;
         } catch (err) {
             logger.log('error', 'ROUTE: /books/edit/:bookid - Error while saving book or extracting cover image.');
+            logger.log('debug', err);
             res.status(500).send({'error': 'Error while saving book or extracting cover image.'});
             return;
         }
@@ -142,11 +152,15 @@ router.post('/edit/:bookid', upload.single('file'), async (req, res) => {
         logger.log('debug', 'ROUTE: /books/edit/:bookid - Querying elasticsearch: editing document.');
         const esres = await elastic.editRow(req.params.bookid, values.concat([dbres.rows[0].id]));
 
+        logger.log('debug', 'ROUTE: /books/edit/:bookid - Querying FTS: editing book.');
+        const ftsres = await ftsClient.addBookFTS(dbres.rows[0].id, values[1], changeFTStext ? filepath : undefined);
+
         res.json(
             dbres.rows[0]
         );
     } catch (err) {
         logger.log('error', 'ROUTE: /books/edit/:bookid - Error while saving to database.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while saving to database.'});
     };
 });
@@ -186,12 +200,16 @@ router.post('/add', upload.single('file'), async (req, res) => {
         logger.log('debug', 'ROUTE: /books/add - Querying elasticsearch: adding document.');
         const esres = await elastic.insertNew(values.concat([dbres.rows[0].id]));
 
+        logger.log('debug', 'ROUTE: /books/add - Querying FTS: adding book.');
+        const ftsres = await ftsClient.addBookFTS(dbres.rows[0].id, req.body.title, filepath);
+
         res.json(
             dbres.rows[0]
         );
         return;
     } catch (err) {
         logger.log('error', 'ROUTE: /books/add - Error while saving to the database.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while saving to the database.'});
         return;
     };
@@ -209,6 +227,9 @@ router.post('/remove/:bookid', async (req, res) => {
         logger.log('debug', 'ROUTE: /books/remove/:bookid - Querying elasticsearch: deleting document.');
         await elastic.deleteRow(req.params.bookid);
 
+        logger.log('debug', 'ROUTE: /books/remove/:bookid - Querying FTS: removing book.');
+        const ftsres = await ftsClient.removeBookFTS(req.params.bookid);
+
         try {
             logger.log('info', 'Deleting files from disk: "' + dbres.rows[0].filepath + '", "' + dbres.rows[0].image + '" .');
             await fs.unlink('./public/' + dbres.rows[0].filepath);
@@ -217,6 +238,7 @@ router.post('/remove/:bookid', async (req, res) => {
             };
         } catch (err) {
             logger.log('error', 'ROUTE: /books/remove/:bookid - Error while deleting files from the server.');
+            logger.log('debug', err);
             res.status(500).send({'error': 'Error while deleting files from the server.'});
             return;
         }
@@ -230,6 +252,7 @@ router.post('/remove/:bookid', async (req, res) => {
         )
     } catch (err) {
         logger.log('error', 'ROUTE: /books/remove/:bookid - Error while removing from the database.');
+        logger.log('debug', err);
         res.status(500).send({'error': 'Error while removing from the database.'});
         return;
     };
