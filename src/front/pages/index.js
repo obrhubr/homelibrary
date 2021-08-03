@@ -47,7 +47,7 @@ export default function Home() {
                     <div className="min-h-full flex justify-center flex-col">
                         {errorState.error ?
                             <div className="flex justify-center mt-8">
-                                <div className="border border-red-600 rounded-lg border-2 w-80 border-dashed">
+                                <div className="border-red-600 rounded-lg border-2 w-80 border-dashed">
                                     <div className="min-w-full flex justify-center text-red-600">
                                         <Error message={errorState.errorMessage}></Error>
                                     </div>

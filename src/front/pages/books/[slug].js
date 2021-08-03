@@ -6,6 +6,7 @@ import axios from 'axios';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Loading from '../../components/Loading';
+import SearchFTSOne from '../../components/Search/SearchFTSOne';
 
 export default function Book() {
     var router = useRouter();
@@ -27,7 +28,6 @@ export default function Book() {
     
         axios.get(URL).then(res => {
             setAppState({ book: res.data, loading: false });
-            console.log(res.data);
         })
         .catch(error => {
             if(error.response) {
@@ -92,6 +92,12 @@ export default function Book() {
                             </p>
                         </div>
 
+                        <div className="mb-4">
+                            <div className="block text-gray-700 text-lg mb-2">
+                                <SearchFTSOne bookid={window.location.pathname.split('/')[2]}></SearchFTSOne>
+                            </div>
+                        </div>
+
                         <div className="mb-4 flex items-center justify-between">
                             <a href={'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + appState.book.filepath} className="block bg-blue-400 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                 Download
@@ -116,7 +122,7 @@ export default function Book() {
                 <>
                     {errorState.error ?
                         <div className="flex justify-center mt-8">
-                            <div className="border border-red-600 rounded-lg border-2 w-80 border-dashed">
+                            <div className="border-red-600 rounded-lg border-2 w-80 border-dashed">
                                 <div className="min-w-full flex justify-center text-red-600">
                                     <Error message={errorState.errorMessage}></Error>
                                 </div>
