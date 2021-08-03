@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ limit: '15mb', extended: false }))
 // Create public folder to expose .epub and images to the world
 app.use(express.static('public'))
 
-const metricsMiddleware = promBundle({ includeMethod: true, includePath: true, includeStatusCode: true });
+const metricsMiddleware = promBundle({ includeMethod: true, includePath: true, includeStatusCode: true, customLabels: {project_name: 'nodejs'} });
 app.use(metricsMiddleware);
 
 app.all('*', function(req, res, next){
