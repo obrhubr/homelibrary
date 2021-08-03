@@ -53,6 +53,8 @@ services:
         image: fts
         expose:
             - 1984/tcp
+        ports:
+            - 1984:1984
         networks:
             - db
             - monitoring
@@ -112,6 +114,8 @@ services:
             - prometheus:/prometheus
         expose:
             - 9090/tcp
+        ports:
+            - 9090:9090
         networks: 
             - monitoring
         depends_on: 

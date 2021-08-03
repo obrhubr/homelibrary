@@ -15,5 +15,6 @@ scrape_configs:
   - job_name: 'fts'
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
+    scrape_interval: 5s
     static_configs:
       - targets: ['fts:1984']
