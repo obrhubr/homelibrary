@@ -120,7 +120,7 @@ router.get('/books/one/:bookId/:text', async (req, res) => {
 });
 
 router.get('/books/all/:text', async (req, res) => {
-    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': true};
+    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false};
     fetch('http://' + process.env.FTS_HOST + ':' + process.env.FTS_PORT + '/search/all', { method: 'POST', body: JSON.stringify(data) })
     .then(res => { return res.json() })
     .then(json => {
