@@ -64,11 +64,10 @@ export default function Book() {
         <Header></Header>
 
         {!appState.loading || appState.books ?
-            <div className="flex items-center justify-center">
-                <div>
-                    
-                    <div>
-                        <div className="mb-4">
+            <div className="">
+                <div className="flex items-center justify-center">
+                    <div className="flex flex-col w-1/2">
+                        <div className="mb-4 flex justify-center">
                             <div className="block text-gray-700 text-sm font-bold mb-2">
                                 <Bookimage image={appState.book.image}></Bookimage>
                             </div>
@@ -103,18 +102,17 @@ export default function Book() {
                                 Download
                             </a>
                         </div>
-                    </div>
 
-                    <div className="flex items-center justify-between">
-                        <form id="form" action={'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/books/remove/' + slug} method="POST">
-                            <input onClick={onSubmit} defaultValue="Delete" className="bg-red-400 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit"/>
-                        </form>
-                        
-                        <a className="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800" href={"/edit/" + slug}>
-                            Edit
-                        </a>
+                        <div className="flex items-center justify-between">
+                            <form id="form" action={'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/books/remove/' + slug} method="POST">
+                                <input onClick={onSubmit} defaultValue="Delete" className="bg-red-400 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit"/>
+                            </form>
+                            
+                            <a className="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800" href={"/edit/" + slug}>
+                                Edit
+                            </a>
+                        </div>
                     </div>
-
                 </div>
             </div>
         :

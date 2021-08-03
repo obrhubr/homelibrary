@@ -56,7 +56,7 @@ export default function Post() {
 
             <div className="mt-8">
                 {appState.error ?
-                    <div className="border border-red-600 rounded-lg border-2 w-80 border-dashed">
+                    <div className="border-red-600 rounded-lg border-2 w-80 border-dashed">
                         <div className="min-w-full flex justify-center text-red-600">
                             <Error message={appState.errorMessage}></Error>
                         </div>

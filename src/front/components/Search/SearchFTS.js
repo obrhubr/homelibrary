@@ -23,8 +23,12 @@ export default function FreeSolo() {
 
     function handleChange(e) {
         setsearchQueryState({ searchQuery: e.target.value });
+    }
 
-        const URL = 'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/search/books/all/' + e.target.value;
+    function searchOnSubmit(e) {
+        e.preventDefault();
+
+        const URL = 'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/search/books/all/' + searchQueryState.searchQuery;
     
         axios.get(URL).then(res => {
             setAppState({ searchResults: res.data.results.slice(0,100) });
@@ -34,11 +38,6 @@ export default function FreeSolo() {
         });
     }
 
-    function searchOnSubmit(event) {
-        event.preventDefault();
-        window.location.replace("/books/" + searchQueryState.searchQuery);
-    }
-
     return (
         <div className="flex">
             <form className="flex" onSubmit={searchOnSubmit}>
@@ -46,10 +45,6 @@ export default function FreeSolo() {
                     <ThemeProvider theme={theme}>
                         <Autocomplete
                             freeSolo
-                            onChange={(event, value) => {
-                                let id = value.substring(value.lastIndexOf(':') + 2);
-                                setsearchQueryState({ searchQuery: id });
-                            }}
                             options={appState.searchResults.map((option) => { 
                                 if(searchQueryState.searchQuery != "") {
                                     return '"' + option.periText + '"' + ' in the book ' + option.bookName + ' with id: ' + option.bookId;
