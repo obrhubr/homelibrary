@@ -17,6 +17,7 @@ describe('Test routes', () => {
         expect(path).not.toBe('images/nofile.png');
 
         fs.access('./public/' + path, fs.F_OK, (err) => {
+            expect(err).toBe(undefined);
             if (err) {
                 throw new Error('File does not exist.')
             }
