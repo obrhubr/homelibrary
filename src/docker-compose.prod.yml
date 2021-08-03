@@ -83,6 +83,8 @@ services:
             PORT: 4000
             HOST: localhost
             ELASTIC_HOST: elasticsearch
+            FTS_HOST: fts
+            FTS_PORT: 1984
         volumes: 
             - backend_bookdata:/usr/src/app/public
 

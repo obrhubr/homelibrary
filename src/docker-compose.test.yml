@@ -34,6 +34,8 @@ services:
             PORT: 4000
             HOST: localhost
             ELASTIC_HOST: elasticsearch
+            FTS_HOST: fts
+            FTS_PORT: 1984
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
         container_name: elasticsearch

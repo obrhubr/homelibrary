@@ -17,9 +17,6 @@ var multer  = require('multer');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/books/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname + '-' + Date.now() + '.epub');
     }
 })
 var upload = multer({ storage: storage });
@@ -208,6 +205,7 @@ router.post('/add', upload.single('file'), async (req, res) => {
         );
         return;
     } catch (err) {
+        cleanupAdding(dbres.rows[0].id, filepath);
         logger.log('error', 'ROUTE: /books/add - Error while saving to the database.');
         logger.log('debug', err);
         res.status(500).send({'error': 'Error while saving to the database.'});
@@ -257,5 +255,38 @@ router.post('/remove/:bookid', async (req, res) => {
         return;
     };
 });
+
+async function cleanupAdding(id, filepath) {
+    const text = 'DELETE FROM books WHERE id = $1 RETURNING *;';
+    const values = [id];
+
+    try {
+        logger.log('debug', 'cleanupAdding - Removing from db. ' + text);
+        const dbres = await pool.query(text, values);
+
+        logger.log('debug', 'cleanupAdding - Removing from elastic. ');
+        await elastic.deleteRow(id);
+
+        logger.log('debug', 'cleanupAdding - Removing from FTS. ');
+        const ftsres = await ftsClient.removeBookFTS(id);
+
+        try {
+            let image = filepath.substring(filepath.lastIndexOf('/') + 1);
+            logger.log('info', 'Deleting files from disk for cleanup: "' + filepath + '", "' + image + '" .');
+            await fs.unlink('./public/' + filepath);
+            if(image !== 'images/nofile.png') {
+                await fs.unlink('./public/' + image);
+            };
+        } catch (err) {
+            logger.log('error', 'cleanupAdding - Error while cleaning up files from the server.');
+            logger.log('debug', err);
+            return;
+        }
+    } catch (err) {
+        logger.log('error', 'cleanupAdding - Error while cleaning from db. ');
+        logger.log('debug', err);
+        return;
+    };
+};
 
 module.exports = router;
