@@ -12,7 +12,7 @@ describe('Test routes', () => {
     test('Testing extracting cover image from epub', async () => {
         await fs.copyFile('./test/assets/test.epub', './public/books/test.epub', 0, (err) => { if(err) { console.log(err); } });
 
-        const path = await epubHandle('test.epub');
+        const path = await epubHandle('test.epub', "testing");
 
         expect(path).not.toBe('images/nofile.png');
 

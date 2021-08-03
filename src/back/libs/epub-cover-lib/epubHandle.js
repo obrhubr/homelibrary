@@ -4,7 +4,7 @@ const path = require('path');
 const getEpubCover = require('./getEpubCover');
 const { logger } = require('../logger');
 
-async function epubHandle(filename) {
+async function epubHandle(filename, trace_id) {
     let imageFilename = 'images/nofile.png';
     try {
         await fs.mkdir('./public/images/' + filename, (err) => { if(err) { console.log(err); } });
@@ -23,14 +23,14 @@ async function epubHandle(filename) {
             imageFilename = 'images/' + filenamecopy;
         })
         .catch(err => {
-            logger.log("error", 'ROUTE: /epubHandle/ - Error while extracting epub: ' + err);
+            logger.log("error", `[${trace_id}] ROUTE: /epubHandle/ - Error while extracting epub: ${err} `);
             return imageFilename;
         });
 
         // Remove the folder with the extracted .epub
         await fs.rm('./public/images/' + filename, { recursive: true }, (err) => { if(err) { console.log(err); } });
     } catch (err) {
-        logger.log("error", 'ROUTE: /epubHandle/ - Error while extracting epub: ' + err);
+        logger.log("error", `[${trace_id}] ROUTE: /epubHandle/ - Error while extracting epub: ${err} `);
         return imageFilename;
     }
     return imageFilename;

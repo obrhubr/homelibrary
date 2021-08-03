@@ -7,14 +7,21 @@ const app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
 const promBundle = require("express-prom-bundle");
+const { v4 } = require('uuid');
 
 // CORS to make requests from the next frontend possible
 app.use(cors());
 app.use(bodyParser.urlencoded({ limit: '15mb', extended: false }))
 // Create public folder to expose .epub and images to the world
 app.use(express.static('public'))
+
 const metricsMiddleware = promBundle({ includeMethod: true, includePath: true, includeStatusCode: true });
 app.use(metricsMiddleware);
+
+app.all('*', function(req, res, next){
+    res.locals.trace_id = v4();
+    next();
+});
 
 // Create Router
 const booksRouter = require('./routes/books');

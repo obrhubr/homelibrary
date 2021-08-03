@@ -85,6 +85,7 @@ services:
             ELASTIC_HOST: elasticsearch
             FTS_HOST: fts
             FTS_PORT: 1984
+            SESSION_SECRET: 7u12312j321239102312312mmfsdlafjsdf9812
         volumes: 
             - backend_bookdata:/usr/src/app/public
 

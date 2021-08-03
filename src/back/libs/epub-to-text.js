@@ -101,7 +101,7 @@ class EPUBToText {
     }
 }
 
-function getTxtFromEpub(filepath, callback) {
+function getTxtFromEpub(filepath, trace_id, callback) {
     var epubToText = new EPUBToText;
 
     fs.mkdirSync('./public/epub-txt/' + filepath, (err) => { 
@@ -111,17 +111,17 @@ function getTxtFromEpub(filepath, callback) {
     });
 
     
-    logger.log('info', 'Epub-to-txt - Calling function to extract text from ebook. ');
+    logger.log('info', `[${trace_id}] Epub-to-txt - Calling function to extract text from ebook. `);
     epubToText.extractTo('./public/' + filepath, './public/epub-txt/' + filepath, (err) => {
         if(err) throw err;
         callback();
     });
 };
 
-function combineFiles(filepath, callback) {
+function combineFiles(filepath, trace_id, callback) {
     try {
         // append all files
-        logger.log('info', 'Epub-to-txt - Appendig individual chapter text files. ');
+        logger.log('info', `[${trace_id}] Epub-to-txt - Appendig individual chapter text files. `);
         exec("cat ./public/epub-txt/" + filepath + "/*.txt >> ./public/epub-txt/" + filepath + "/all.txt", (error, stdout, stderr) => {
             if (error) {
                 throw err;
@@ -134,10 +134,10 @@ function combineFiles(filepath, callback) {
     } 
 };
 
-function epubToTxt(filepath, callback) {
-    logger.log('info', 'Epub-to-txt - Extracting text from ebook. ');
-    getTxtFromEpub(filepath, () => {
-        combineFiles(filepath, () => {
+function epubToTxt(filepath, trace_id, callback) {
+    logger.log('info', `[${trace_id}] Epub-to-txt - Extracting text from ebook. `);
+    getTxtFromEpub(filepath, trace_id, () => {
+        combineFiles(filepath, trace_id, () => {
             callback();
         });
     });
