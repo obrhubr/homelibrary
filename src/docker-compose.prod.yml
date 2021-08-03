@@ -126,7 +126,7 @@ services:
             - monitoring
             - front
         volumes:
-            - grafana_data:/var/lib/grafana
+            - ./data/grafana:/var/lib/grafana
             - grafana_prov:/etc/grafana/provisioning/
 
 networks:
@@ -144,8 +144,6 @@ volumes:
     elastic:
         driver: local
     prometheus:
-        driver: local
-    grafana_data:
         driver: local
     grafana_prov:
         driver: local
