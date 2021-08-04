@@ -1,0 +1,185 @@
+version: "3"
+
+# Starts up all the services for production
+
+services:
+    # Databases
+    db:
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        expose: 
+            - 5432/tcp
+        networks:
+            - db
+        volumes: 
+            - pg:/var/lib/postgresql/data
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+        container_name: elasticsearch
+        environment:
+            - xpack.security.enabled=false
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            #- "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 1000M
+                reservations:
+                    cpus: '0.25'
+                    memory: 500M
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        cap_add:
+            - IPC_LOCK
+        networks:
+            - db
+        expose:
+            - 9200/tcp
+            - 9300/tcp
+        volumes:
+            - elastic:/usr/share/elasticsearch/data
+
+    fts:
+        image: fts
+        expose:
+            - 1984/tcp
+        ports:
+            - 1984:1984
+        networks:
+            - db
+            - monitoring
+        volumes:
+            - logs-fts:/usr/src/app/
+            - fts:/usr/src/app/db
+    
+    # Frontend and backend
+    back:
+        image: hls
+        ports:
+            - "4000:4000"
+        networks:
+            - front
+            - db
+            - monitoring
+        depends_on:
+            - db
+            - elasticsearch
+        entrypoint: ["/bin/sh", "/usr/src/app/docker-entrypoint.sh"]
+        command: ["node", "start.js"]
+        environment:
+            NODE_ENV: production
+            DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+            PG_DB: postgres
+            PG_USER: postgres
+            PG_PASSWORD: postgres
+            PG_HOST: db
+            WEBPORT: 3000
+            PORT: 4000
+            HOST: localhost
+            ELASTIC_HOST: elasticsearch
+            FTS_HOST: fts
+            FTS_PORT: 1984
+            SESSION_SECRET: 7u12312j321239102312312mmfsdlafjsdf9812
+        volumes: 
+            - logs-back:/usr/src/app/logs/
+            - backend_bookdata:/usr/src/app/public
+
+    front:
+        image: hlf
+        ports:
+            - "3000:3000"
+        command: ["npm", "run", "start"]
+        environment:
+            NEXT_PUBLIC_HOST: localhost
+            NEXT_PUBLIC_APIPORT: 4000
+        networks: 
+            - front
+        depends_on: 
+            - back
+
+    # Monitoring
+    prometheus:
+        user: root
+        image: prom/prometheus
+        volumes:
+            - ./data/prometheus/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus:/prometheus
+        expose:
+            - 9090/tcp
+        ports:
+            - 9090:9090
+        networks: 
+            - monitoring
+        depends_on: 
+            - back
+
+    grafana:
+        user: root
+        image: grafana/grafana
+        ports:
+            - 8000:3000
+        depends_on:
+            - prometheus
+        networks: 
+            - monitoring
+            - front
+        volumes:
+            - ./data/grafana:/var/lib/grafana
+            - grafana_prov:/etc/grafana/provisioning/
+
+    loki:
+        image: grafana/loki:2.2.1
+        networks: 
+            - monitoring
+        ports:
+            - "3100:3100"
+        command: -config.file=/etc/loki/local-config.yaml
+    
+    promtail:
+        image: grafana/promtail:2.2.1
+        networks: 
+            - monitoring
+        command: -config.file=/etc/promtail/config.yaml
+        volumes:
+            - ./data/promtail/:/etc/promtail/
+            - logs-back:/promtail-logs/back/
+            - logs-fts:/promtail-logs/fts/
+
+networks:
+    default:
+    db:
+        driver: bridge
+    front:
+        driver: bridge
+    monitoring:
+        driver: bridge
+
+volumes:
+    pg:
+        driver: local
+    elastic:
+        driver: local
+    prometheus:
+        driver: local
+    grafana_prov:
+        driver: local
+    backend_bookdata:
+        driver: local
+    fts:
+        driver: local
+    logs-fts:
+        driver: local
+    logs-back:
+        driver: local
+    promtail:
+        driver: local
