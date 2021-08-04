@@ -22,7 +22,7 @@ export default function FreeSolo() {
     });
 
     useEffect(() => {
-        const URL = 'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/books/all';
+        const URL = 'http://' + process.env.NEXT_PUBLIC_HOST + ':' + process.env.NEXT_PUBLIC_APIPORT + '/books/all/0';
     
         axios.get(URL).then(res => {
             setAppState({ searchResults: res.data.slice(0,100) });

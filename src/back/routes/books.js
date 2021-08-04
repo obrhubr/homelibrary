@@ -33,13 +33,15 @@ const pool = new Pool({
 
 // Return all books in the database
 router.get('/all/:offset', async (req, res) => {
-    if(req.params.offset == undefined || Math.max(req.params.offset, 0) == 0) {
-        req.params.offset = 0;
-    }
+    let offset = 0;
+    if(!(req.params.offset == undefined || Math.max(req.params.offset, 0) == 0)) {
+        offset = parseInt(req.params.offset);
+    };
+
     var pageLength = 30;
-    req.params.offset *= pageLength;
-    const text = 'SELECT * FROM "books" ORDER BY ' + pageLength + ' LIMIT 30 OFFSET $1;';
-    const values = [req.params.offset];
+    offset *= pageLength;
+    const text = 'SELECT * FROM "books" ORDER BY time LIMIT ' + pageLength + ' OFFSET $1;';
+    const values = [offset];
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] Querying database: ${text}`);
