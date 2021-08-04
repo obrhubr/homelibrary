@@ -111,7 +111,7 @@ router.get('/search-as-you-type/:text', async (req, res) => {
 
 // Routes to query fts service
 router.get('/books/one/:bookId/:text', async (req, res) => {
-    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false};
+    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false,'maxResults': 100};
     fetch('http://' + process.env.FTS_HOST + ':' + process.env.FTS_PORT + '/search/one', { method: 'POST', body: JSON.stringify(data) })
     .then(res => { return res.json() })
     .then(json => {
@@ -120,7 +120,7 @@ router.get('/books/one/:bookId/:text', async (req, res) => {
 });
 
 router.get('/books/all/:text', async (req, res) => {
-    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false};
+    let data = {'bookId': req.params.bookId, 'searchText': req.params.text,'stopAfterOne': false,'maxResults': 1};
     fetch('http://' + process.env.FTS_HOST + ':' + process.env.FTS_PORT + '/search/all', { method: 'POST', body: JSON.stringify(data) })
     .then(res => { return res.json() })
     .then(json => {
