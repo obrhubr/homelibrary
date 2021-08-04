@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Search from './Search/Search';
-import SearchFTS from './Search/SearchFTS';
 
 export default class Header extends Component {
     render() {
@@ -17,8 +16,8 @@ export default class Header extends Component {
                         <div className="text-sm lg:flex-grow mr-4">
                             <Search></Search>
                         </div>
-                        <div className="text-sm lg:flex-grow mr-4">
-                            <SearchFTS></SearchFTS>
+                        <div>
+                            <a href="/searchfts" className="mx-2 inline-block text-sm px-4 py-2 leading-none border rounded text-green-400 border-green-400 hover:border-transparent hover:text-teal hover:bg-green-800 mt-4 lg:mt-0">Search Book Content</a>
                         </div>
                         <div>
                             <a href="/add" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal hover:bg-white mt-4 lg:mt-0">Add Book</a>

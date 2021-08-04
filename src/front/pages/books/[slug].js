@@ -6,7 +6,7 @@ import axios from 'axios';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Loading from '../../components/Loading';
-import SearchFTSOne from '../../components/Search/SearchFTSOne';
+import SearchFTS from '../../components/Search/SearchFTS';
 
 export default function Book() {
     var router = useRouter();
@@ -74,15 +74,15 @@ export default function Book() {
                         </div>
 
                         <div className="mb-1">
-                            <p className="block text-gray-700 text-2xl mb-2">
+                            <div className="block text-gray-700 text-2xl mb-2">
                                 <span className="font-bold">{appState.book.title}</span> by {appState.book.author}
-                            </p>
+                            </div>
                         </div>
 
                         <div className="mb-1">
-                            <p className="block text-gray-700 text-sm font-bold mb-2">
+                            <div className="block text-gray-700 text-sm font-bold mb-2">
                                 <BookDescriptionKeywords keywords={appState.book.keywords}></BookDescriptionKeywords>
-                            </p>
+                            </div>
                         </div>
 
                         <div className="mb-4">
@@ -93,7 +93,7 @@ export default function Book() {
 
                         <div className="mb-4">
                             <div className="block text-gray-700 text-lg mb-2">
-                                <SearchFTSOne bookid={window.location.pathname.split('/')[2]}></SearchFTSOne>
+                                <SearchFTS path="one" bookid={window.location.pathname.split('/')[2]}></SearchFTS>
                             </div>
                         </div>
 
