@@ -213,7 +213,9 @@ router.post('/add', upload.single('file'), async (req, res) => {
         );
         return;
     } catch (err) {
-        cleanupAdding(dbres.rows[0].id, filepath);
+        if(typeof(dbres) !== 'undefined') {
+            cleanupAdding(dbres.rows[0].id, filepath);
+        };
         logger.log('error', `[${res.locals.trace_id}] ROUTE: /books/add - Error while saving to the database. `);
         logger.log('debug', `[${res.locals.trace_id}] ${err}`);
         res.status(500).send({'error': 'Error while saving to the database.'});

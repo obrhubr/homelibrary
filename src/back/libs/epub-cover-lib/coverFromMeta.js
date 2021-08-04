@@ -11,11 +11,15 @@ module.exports = opfJs => {
   if (!manifest || !meta) {
     return;
   }
-
-  /* filter and destructure the meta cover tag */
-  const [metaDataCoverReference] = meta.filter(
-    item => item._attributes.name === 'cover'
-  );
+  try {
+    /* filter and destructure the meta cover tag */
+    const [metaDataCoverReference] = meta.filter(
+      item => item._attributes.name === 'cover'
+    );
+  } catch(err) {
+    console.log(err);
+    return;
+  }
 
   /* if there is no meta cover tag or it does not have the content attribute, return; something's not right */
   if (!metaDataCoverReference || !metaDataCoverReference._attributes.content) {
